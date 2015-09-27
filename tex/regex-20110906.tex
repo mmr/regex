@@ -1,0 +1,806 @@
+%
+% @author Marcio Ribeiro
+% @created Sep. 2011
+% 
+
+\documentclass{beamer}
+
+% esconde botoes de navegacao
+\setbeamertemplate{navigation symbols}{}
+
+% mostra o proximo item da lista
+%\beamersetuncovermixins{\opaqueness<1>{25}}{\opaqueness<2->{15}}
+
+% pt-br
+\usepackage[utf8]{inputenc}
+\usepackage[portuguese]{babel}
+
+% roubada para conseguir fazer uma barra sem usar fragile
+%\usepackage{rotating}
+%\newcommand{\cb}{
+% \begin{rotate}{35}/\end{rotate}
+%}
+
+% tema
+\usetheme{Warsaw}
+%\usetheme{Antibes}
+%\usetheme{Madrid}
+%\usetheme{Malmoe}
+%\usetheme{PaloAlto}
+
+% Mostra sumario a cada section
+%\AtBeginSection[] {
+% \begin{frame}
+%  \tableofcontents[currentsection]
+% \end{frame}
+%}
+
+\AtBeginSubsection[] {
+ \begin{frame}
+  \frametitle{Sumário}
+  \tableofcontents[currentsection,currentsubsection]
+ \end{frame}
+}
+
+\pgfdeclareimage[height=.4cm]{logo}{maps_logo}
+\pgfdeclareimage[height=1cm]{logowatermark}{maps_logo_watermark}
+\logo{\pgfuseimage{logowatermark}}
+
+\title{Expressões Regulares}
+\author{Marcio Ribeiro}
+\date{Setembro 2011}
+
+\begin{document}
+
+\begin{frame}
+ \titlepage
+ {\tiny
+  Esta apresentação foi preparada pela \pgfuseimage{logo}  e o seu conteúdo é
+  estritamente confidencial e de uso exclusivo de seus colaboradores.
+  Todas as personagens, mesmo as reais, são fictícias, qualquer semelhança com
+  pessoas que você conhece é mera coincidência.
+ }
+\end{frame}
+
+\begin{frame}
+ \frametitle{Sumário}
+ \tableofcontents
+\end{frame}
+
+\section{O que é}
+\begin{frame}
+ \frametitle{O que é}
+  \begin{block}{Forma concisa e flexível de...}
+  \begin{itemize}
+   \item Procurar em texto
+   \item Descrever um padrão
+  \end{itemize}
+ \end{block}
+\end{frame}
+
+\subsection{Você já usa}
+\begin{frame}
+ \frametitle{Você já usa Padrões e Expressões}
+ \begin{block}{Na escrita}
+  \begin{itemize}
+   \item Corintianos e/ou bandidos devem ser presos
+	\pause
+   \item Ele(a) gosta de homens
+	\pause
+   \item Você(s) trabalha(m) na \pgfuseimage{logo}
+	\pause
+   \item Do 1 até o 42...
+  \end{itemize}
+ \end{block}
+
+ \pause
+ \begin{block}{No computador}
+  \begin{itemize}
+   \item \texttt{dir *.txt}
+	\pause
+   \item {\small \texttt{SELECT * FROM colaborador WHERE nome LIKE 'Rodrigo\%'}}
+  \end{itemize}
+ \end{block}
+\end{frame}
+
+\subsection{História}
+\begin{frame}
+ \frametitle{História}
+ \begin{block}{História}
+  \begin{itemize}
+   \item \~{}1950: Matemática/Computação : regular sets / automata
+	\pause
+   \item \~{}1970: Computação/Software
+	\begin{itemize}
+	 \item \~{}1970: ED \pause: g/RE/p
+	  \pause
+	 \item \~{}1980: regex lib
+	  \pause
+	 \item \~{}1990: PERL \pause: PCRE (PERL Compatible RE)
+	\end{itemize}
+  \end{itemize}
+ \end{block}
+\end{frame}
+
+\section{Quando usar}
+\subsection{Usos comuns}
+\begin{frame}
+ \frametitle{Quando usar}
+ \begin{block}{Usos comuns}
+  \begin{itemize}
+   \item Busca por padrão
+	\pause
+   \item Validação de entrada
+	\begin{itemize}
+	 \item Telefone
+	 \item E-mail
+	\end{itemize}
+	\pause
+   \item Substituição
+  \end{itemize}
+ \end{block}
+\end{frame}
+
+\subsection{Suporte}
+\begin{frame}
+ \frametitle{Suporte}
+ \begin{block}{Programação}
+  \begin{itemize}
+   \item ActionScript, AWK, C\#, D, Delphi/Obj Pascal, Go, Haskell, Java, JavaScript, Lua, Objective-C, OCaml, Perl, PHP, Python, Ruby, SAP ABAP, Tcl, VB6, VB.NET, VBScript, XPath, XSD, ...
+  \end{itemize}
+ \end{block}
+
+ \pause
+ \begin{block}{Ferramentas}
+  \begin{itemize}
+   \item Dreamweaver, emacs, eclipse, grep, Microsoft Word, notepad++, OpenOffice, PowerShell, sed, TextMate, UltraEdit, vim, ...
+
+  \end{itemize}
+ \end{block}
+
+ \pause
+ \begin{block}{Banco de dados}
+  \begin{itemize}
+   \item MySQL, PostgreSQL, Oracle, ...
+  \end{itemize}
+ \end{block}
+\end{frame}
+
+\section{Como funciona}
+\begin{frame}
+ \frametitle{Como funciona}
+ \begin{block}{Mágica?}
+  \begin{itemize}
+   \item Metacaracteres \pause: regras \pause: match!
+  \end{itemize}
+ \end{block}
+
+ \pause
+ \begin{block}{Exemplo}
+  \begin{itemize}
+   \item E-mail: marcio.ribeiro@maps.com.br
+	\pause
+	\begin{itemize}
+	 \item \texttt{.*@.*}
+	  \pause
+	 \item \texttt{[a-z.]+@[a-z.]+}
+	\end{itemize}
+  \end{itemize}
+ \end{block}
+\end{frame}
+
+%\begin{frame}
+% \frametitle{Quando usar}
+
+% % \verb#%#%^(?:(?:(?:[^@,"\[\]\x5c\x00-\x20\x7f-\xff\.]|\x5c(?=[@,"\[\]\x5c\x00-\x20\x7f-\xff]))(?:[^@,"\[\]\x5c\x00-\x20\x7f-\xff\.]|(?<=\x5c)[@,"\[\]\x5c\x00-\x20\x7f-\xff]|\x5c(?=[@,"\[\]\x5c\x00-\x20\x7f-\xff])|\.(?=[^\.])){1,62}(?:[^@,"\[\]\x5c\x00-\x20\x7f-\xff\.]|(?<=\x5c)[@,"\[\]\x5c\x00-\x20\x7f-\xff])|[^@,"\[\]\x5c\x00-\x20\x7f-\xff\.]{1,2})|"(?:[^"]|(?<=\x5c)"){1,62}")@(?:(?!.{64})(?:[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.?|[a-zA-Z0-9]\.?)+\.(?:xn--[a-zA-Z0-9]+|[a-zA-Z]{2,6})|\[(?:[0-1]?\d?\d|2[0-4]\d|25[0-5])(?:\.(?:[0-1]?\d?\d|2[0-4]\d|25[0-5])){3}\])$#
+
+% \begin{block}{Expressões podem ficar complicadas...}
+%  \begin{itemize}
+%   \item fooooooo
+%   \item baaaaaar
+%  \end{itemize}
+% \end{block}
+%\end{frame}
+
+\section{Metacaracteres}
+\subsection{Tipo representante}
+\begin{frame}
+ \frametitle{Tipo representante}
+ \begin{block}{O ponto : \texttt{.}}
+  \begin{itemize}
+   \item Casa com qualquer caractere, inclusive o ponto!
+	\pause
+   \item Exemplos:
+	\begin{itemize}
+	 \item \texttt{O.a}: casa com O\textbf{b}a, O\textbf{L}a, O\textbf{p}a, O\textbf{5}a, O\textbf{.}a, O\textbf{@}a, O\textbf{\#}a, etc...
+	  \pause
+	 \item \texttt{..X}: casa com \textbf{EB}X, \textbf{OG}X, \textbf{MM}X e todas outras empresas do Eike Batista
+	\end{itemize}
+  \end{itemize}
+ \end{block}
+
+ \pause
+ \begin{block}{A lista : \texttt{[]}}
+  \begin{itemize}
+   \item Casa com qualquer caractere dentro dos colchetes!
+	\pause
+   \item Exemplos:
+	\begin{itemize}
+	 \item \texttt{El[ea]}: casa com El\textbf{e} ou El\textbf{a} (ui)
+	  \pause
+	 \item \texttt{[13579]}: casa com \textbf{1}, \textbf{3}, \textbf{5}, \textbf{7} ou \textbf{9}
+	  \pause
+	 \item \texttt{[EOM][BGM]X}: casa com \textbf{EB}X, \textbf{OG}X, \textbf{MM}X. É o que o Eike usa.
+	\end{itemize}
+  \end{itemize}
+ \end{block}
+\end{frame}
+
+\begin{frame}
+ \frametitle{Exercícios}
+ \begin{block}{Case as entradas abaixo usando apenas \texttt{.} e/ou \texttt{[]}}
+  \begin{enumerate}
+   \item Obladi, Oblada
+   \item rato, pato, gato
+   \item Olá, Oba, Opa, Oia
+   \item EBX, ECX, MMX, OGX, MPX, LLX, IMX
+  \end{enumerate}
+ \end{block}
+
+ \pause
+ \begin{block}{Respostas}
+  \begin{enumerate}
+   \item Oblad\textbf{.} ou Oblad\textbf{[ia]}
+	\pause
+   \item \textbf{.}ato ou \textbf{[rpg]}ato
+	\pause
+   \item O\textbf{..} ou O\textbf{[lbpi][aá]}
+	\pause
+   \item \textbf{..}X ou \textbf{[EMOLI][BCMGPL]}X
+  \end{enumerate}
+ \end{block}
+\end{frame}
+
+\begin{frame}
+ \frametitle{Intervalos em listas}
+ \begin{block}{Use o poder do -}
+  \begin{itemize}
+   \item \texttt{[a-z]} = \texttt{[abcdefghijklmnopqrstuvwxyz]}
+   \item \texttt{[A-Z]} = \texttt{[ABCDEFGHIJKLMNOPQRSTUVWXYZ]}
+   \item \texttt{[0-9]} = \texttt{[0123456789]}
+  \end{itemize}
+ \end{block}
+
+ \pause
+ \begin{block}{Todos intervalos são válidos}
+  \begin{itemize}
+   \item \texttt{[c-h]} = \texttt{[cdefgh]}
+   \item \texttt{[3-8]} = \texttt{[345678]}
+   \item \texttt{[M-Y]} = \texttt{[MNOPQRSTUVWXY]}
+  \end{itemize}
+ \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+ \frametitle{Intervalos em listas}
+ \begin{block}{Você pode ter mais de um intervalo por lista}
+  \begin{itemize}
+   \item \texttt{[a-zA-Z]} = \texttt{[abc...xyzAB...XYZ]}
+   \item \texttt{[0-37-9]} = \texttt{[0123789]}
+   \item \texttt{[bcX-Zd-f1-5\#]} = \texttt{[bcXYZdef12345\#]}
+  \end{itemize}
+ \end{block}
+
+ \pause
+ \begin{block}{O intervalo segue a tabela ASCII}
+  \begin{itemize}
+   \item Em Linux/OSX, consulte \textbf{man ascii}
+	\pause 
+   \item \texttt{[:-@]} = \texttt{[:;<=>?@]}
+	\pause
+   \item Não use \texttt{[A-z]} porque tem caras estranhos no meio:
+	\begin{itemize}
+	 \item \texttt{[A-z]} = \verb=[A-Z[\]^_`a-z]=
+	\end{itemize}
+  \end{itemize}
+ \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+ \frametitle{Exercícios}
+ \begin{block}{Case as entradas abaixo usando apenas \texttt{[]}}
+  \begin{enumerate}
+   \item a, b, c, d, 1, 2, 3, 4, 5
+   \item d-, e-, f-, g-, dX, eX, fX, gX
+   \item aa3, ad2, a21, ab4, ab2, a13, Aa3, Ac2, A34, AdF
+  \end{enumerate}
+ \end{block}
+
+ \pause
+ \begin{block}{Respostas}
+  \begin{enumerate}
+   \item \texttt{[a-d1-5]}
+	\pause
+   \item \texttt{[d-g][X-]} ou \verb=[d-g][\-X]=
+	\pause
+   \item \texttt{[aA][a-d1-3][1-4F]}
+  \end{enumerate}
+ \end{block}
+\end{frame}
+
+\begin{frame}
+ \frametitle{Tipo representante}
+ \begin{block}{A lista negada : \texttt{[\^{}...]}}
+  \begin{itemize}
+   \item Casa com qualquer caractere que \textbf{NÃO} esteja dentro dos colchetes!
+	\pause
+   \item Exemplos:
+	\begin{itemize}
+	 \item \texttt{El[\^{}aA]}: não casa com El\textbf{a}, mas casa com Ele (ui)
+	  \pause
+	 \item \texttt{[\^{}13579]}: não casa com \textbf{1}, \textbf{3}, \textbf{5}, \textbf{7} ou \textbf{9}
+	  \pause
+	 \item \texttt{[\^{}EOM][\^{}BGM]X}: coitado do Eike, vai ter bem menos opções...
+	\end{itemize}
+  \end{itemize}
+ \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+ \frametitle{Exercícios}
+ \begin{block}{Escreva uma expressão regular que case com...}
+  \begin{enumerate}
+   \item Qualquer letra seguida de algo que não seja um número
+   \item Qualquer número seguido de algo que não seja uma letra 
+  \end{enumerate}
+ \end{block}
+
+ \pause
+ \begin{block}{Respostas}
+  \begin{enumerate}
+   \item \verb=[a-zA-Z][^0-9]=
+	\pause
+   \item \verb=[0-9][^a-zA-Z]=
+  \end{enumerate}
+ \end{block}
+\end{frame}
+
+\begin{frame}
+ \frametitle{Acentuação}
+ \begin{block}{Atenção}
+  \begin{itemize}
+   \item \texttt{[a-z][A-Z]} não casam acentos, cedilha, etc
+   \item Para isso, as \textbf{classes POSIX} devem ser usadas
+   \item \textbf{Importante}: as classes seguem o locale do seu sistema
+   \item Se o idioma do seu sistema não tem acentos, as classes não vão casar acentos
+  \end{itemize}
+ \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+ \frametitle{Classes POSIX}
+ \begin{block}{Classes POSIX}
+  \begin{center}
+   \begin{tabular}{|l|l|l|}
+	\hline
+	\textbf{Classe POSIX} & \textbf{Similar} & \textbf{Significa} \\
+	\hline
+	\texttt{[:upper:]} & \texttt{[A-Z]} & Letras maiúsculas \\
+	\hline
+	\texttt{[:lower:]} & \texttt{[a-z]} & Letras minúsculas \\
+	\hline
+	\texttt{[:alpha:]} & \texttt{[A-Za-z]} & Letras \\
+	\hline
+	\texttt{[:alnum:]} & \texttt{[A-Za-z0-9]} & Letras e números \\
+	\hline
+	\texttt{[:digit:]} & \texttt{[0-9]} & Números \\
+	\hline
+	\texttt{[:punct:]} & \texttt{[.,!?:...]} & Sinais de pontuação \\
+	\hline
+	\texttt{[:blank:]} & \verb=[ \t]= & Espaço e tab \\
+	\hline
+	\texttt{[:space:]} & \verb=[ \t\n\b\r\f\v]= & Brancos \\
+	\hline
+   \end{tabular}
+  \end{center}
+ \end{block}
+\end{frame}
+
+\begin{frame}
+ \frametitle{Classes POSIX}
+ \begin{block}{Uma classe é uma lista embutida}
+  \begin{center}
+   \begin{tabular}{|l|l|}
+	\hline
+	\textbf{Exemplo} & \textbf{Similar} \\
+	\hline
+	\texttt{[[:upper:][:digit:]]} & \texttt{[A-Z0-9]} \\
+	\hline
+	\texttt{[TU[:lower:]5-9]} & \texttt{[TUa-z5-9]} \\
+	\hline
+	\texttt{[\^{}[:alpha:][:digit:]\#]} & \texttt{[\^{}A-Za-z0-9\#]} \\
+	\hline
+   \end{tabular}
+  \end{center}
+ \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+ \frametitle{Classes POSIX}
+ \begin{block}{Classes usando barra letra}
+  \begin{itemize}
+   \item Escrever \texttt{[[:alpha:]]} é muito chato e feio
+   \item Algumas linguagens não suportam as classes feias
+   \item Para isso servem as classes usando barra letra
+  \end{itemize}
+
+  \pause
+  \begin{center}
+   \begin{tabular}{|l|l|l|}
+	\hline
+	\textbf{Barra letra} & \textbf{Equivalente feia} & \textbf{Significa} \\
+	\hline
+	\verb=\d= & \verb=[:digit:]= & Números \\
+	\hline
+	\verb=\s= & \verb=[:space:]= & Branco \\
+	\hline
+	\verb=\w= & \verb=[[:alnum:]_]= & Letra/número \\
+	\hline
+    \verb=\D= & \verb=[^\d]= & Não número \\
+	\hline
+    \verb=\S= & \verb=[^\s]= & Não branco \\
+	\hline
+    \verb=\W= & \verb=[^\w]= & Não letra/número \\
+	\hline
+   \end{tabular}
+  \end{center}
+ \end{block}
+\end{frame}
+
+\subsection{Tipo quantificador}
+\begin{frame}
+ \frametitle{Tipo quantificador}
+ \begin{block}{O opcional : \texttt{?}}
+  \begin{itemize}
+   \item Casa se o \textit{átomo} anterior ocorrer ou não. Por isso, opcional
+	\pause
+   \item Exemplos:
+	\begin{itemize}
+	 \item \texttt{O.?a}: casa com Oa, Oba, OLa, Opa, ...
+	  \pause
+	 \item \texttt{F[ao]?o?}: casa com Fa, Fo, Fao e Foo
+	\end{itemize}
+  \end{itemize}
+ \end{block}
+
+ \pause
+ \begin{block}{O asterisco : \texttt{*}}
+  \begin{itemize}
+   \item Casa se o \textit{átomo} anterior ocorrer \textbf{zero} ou mais vezes
+	\pause
+   \item Exemplos:
+	\begin{itemize}
+	 \item \texttt{O.*a}: casa com Oa, Oba, Obbbbba, OLa, OLLLLLa, ...
+	  \pause
+	 \item \texttt{F[ao]*o*}: casa com F, Faa, Fao, Faao, Faaoo, Fo, Foooo, ...
+	\end{itemize}
+  \end{itemize}
+ \end{block}
+\end{frame}
+
+\begin{frame}
+ \frametitle{Tipo quantificador}
+ \begin{block}{O mais : \texttt{+}}
+  \begin{itemize}
+   \item Casa se o \textit{átomo} anterior ocorrer \textbf{uma} ou mais vezes
+	\pause
+   \item Exemplos:
+	\begin{itemize}
+	 \item \texttt{O.+a}: casa com Oba, Obbbbba, OLa, OLLLLLa, ...
+	  \pause
+	 \item \texttt{F[ao]+o+}: casa com Fao, Faaao, Faaaoooo, Foo, Fooooo, ...
+	\end{itemize}
+  \end{itemize}
+ \end{block}
+\end{frame}
+
+\begin{frame}
+ \frametitle{Tipo quantificador}
+ \begin{block}{As chaves : \texttt{\{n, m\}}}
+  \begin{itemize}
+   \item Casa se o \textit{átomo} anterior ocorrer de \textbf{n} até \textbf{m} vezes
+  \end{itemize}
+  \pause
+  \begin{center}
+   \begin{tabular}{|l|l|}
+	\hline
+	\textbf{Expressão} & \textbf{Observação} \\
+	\hline
+	\texttt{A\{3\}} & exatamente AAA \\
+	\hline
+	\texttt{A\{1,3\}} & casa com A, AA ou AAA \\
+	\hline
+	\texttt{A\{0,\}} & o mesmo que \texttt{A*} \\
+	\hline
+	\texttt{A\{1,\}} & o mesmo que \texttt{A+} \\
+	\hline
+	\texttt{A\{0,1\}} & o mesmo que \texttt{A?} \\
+	\hline
+   \end{tabular}
+  \end{center}
+
+  \pause
+  \begin{itemize}
+   \item Exemplos:
+	\begin{itemize}
+	 \item \texttt{O.\{,2\}a}: casa com Oa, Oba, Obba, OLa, OLLa, ...
+	  \pause
+	 \item \texttt{F[ao]\{2\}o\{1,\}}: casa com Faao, Faaooo, Foooooo, ...
+	\end{itemize}
+  \end{itemize}
+ \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+ \frametitle{Exercícios 1 (pode ter mais de uma resposta)}
+ \begin{block}{A entrada 'FooBar' casa com}
+  \begin{enumerate}
+   \item \texttt{Fo+Bar?}
+   \item \verb=N*\w?\w+.a\s*.=
+   \item \texttt{[[:alpha:]]*}
+   \item \texttt{.?.+oB.*r}
+  \end{enumerate}
+ \end{block}
+
+ \pause
+ \begin{block}{Respostas}
+  1, 2, 3 e 4
+ \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+ \frametitle{Exercícios 2 (pode ter mais de uma resposta)}
+ \begin{block}{A entrada 'óia o auê aí ô' casa com}
+  \begin{enumerate}
+   \item \verb=\w+=
+   \item \verb=[ a-ú]+=
+   \item \verb=[[:alpha:]]*=
+   \item \verb=[\w\s]+=
+  \end{enumerate}
+ \end{block}
+
+ \pause
+ \begin{block}{Respostas}
+  2 e 4
+ \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+ \frametitle{Exercícios 3}
+ \begin{block}{Escreva uma expressão que case com}
+  \begin{enumerate}
+   \item Um telefone. Ex: 5085-7000
+   \item Uma hora. Ex: 12:01 AM
+  \end{enumerate}
+ \end{block}
+
+ \pause
+ \begin{block}{Respostas}
+  \begin{enumerate}
+   \item \verb=\d{4}-\d{4}=
+	\pause
+   \item \verb=[01]\d:[0-5]\d [AP]M=
+  \end{enumerate}
+ \end{block}
+\end{frame}
+
+\subsection{Tipo âncora}
+\begin{frame}[fragile]
+ \frametitle{Tipo âncora}
+ \begin{block}{O início : \texttt{\^{}}}
+  \begin{itemize}
+   \item Marca o ínicio da linha
+   \item Sempre que possível, use o \^{} nas suas expressões
+  \end{itemize}
+ \end{block}
+
+ \pause
+ \begin{block}{O fim : \texttt{\$}}
+  \begin{itemize}
+   \item Marca o fim da linha
+   \item Sempre que possível, use o \$ nas suas expressões
+   \item \verb=^$= casa com uma linha vazia
+  \end{itemize}
+ \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+ \frametitle{Tipo âncora}
+ \begin{block}{A borda}
+  \begin{itemize}
+   \item Marca o limite de uma palavra, ou seja, onde ela começa e/ou termina
+	\pause
+   \item Exemplos:
+	\begin{center}
+	 \begin{tabular}{|l|l|}
+	  \hline
+	  \textbf{Expressão} & \textbf{Casa com} \\
+	  \hline
+	  \verb=dia= & dia, diafragma, melodia, radial, bom-dia! \\
+	  \hline
+	  \verb=\bdia= & dia, diafragma, bom-dia! \\
+	  \hline
+	  \verb=dia\b= & dia, melodia, bom-dia!  \\
+	  \hline
+	  \verb=\bdia\b= & dia, bom-dia! \\
+	  \hline
+	 \end{tabular}
+	\end{center}
+  \end{itemize}
+ \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+ \frametitle{Exercícios}
+ \begin{block}{Escreva uma expressão regular que case com...}
+  \begin{enumerate}
+   \item A palavra \textbf{mágica} no final da linha
+   \item Qualquer linha que só tenha números
+   \item Qualquer linha que não comece com branco seguido de \verb=^=
+  \end{enumerate}
+ \end{block}
+
+ \pause
+ \begin{block}{Respostas}
+  \begin{enumerate}
+   \item \verb=\bmágica$=
+	\pause
+   \item \verb=^\d+$=
+	\pause
+   \item \verb=^\S^= ou \verb=^[^\s]^=
+  \end{enumerate}
+ \end{block}
+\end{frame}
+
+\subsection{Outros}
+\begin{frame}[fragile]
+ \frametitle{Outros metacaracteres}
+ \begin{block}{Escape}
+  \begin{itemize}
+   \item Tira os "poderes" de um metacaractere. Casando com seu valor literal 
+	\pause
+   \item Exemplos:
+  \begin{itemize}
+   \item \verb=\[\.=: casa com um \verb=[= seguido de um \verb=.=
+    \pause
+   \item \verb=\*+=: casa com um \verb=*= literal 1 ou mais vezes
+  \end{itemize}
+  \pause
+  \item Uma outra forma é usar uma lista. Todos caracteres são normais na lista. Isto é, \verb=[*.]= casa com os literais \verb=*= ou \verb=.=
+ \end{itemize}
+ \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+ \frametitle{Outros metacaracteres}
+ \begin{block}{Ou : \texttt{|}}
+  \begin{itemize}
+   \item Indica alternativas para o casamento
+   \item \verb=rato|pato|gato= é equivalente a [rpg]ato
+  \end{itemize}
+
+  \pause
+  \begin{center}
+   \begin{tabular}{|l|l|}
+	\hline
+	\textbf{Expressão} & \textbf{Casa com} \\
+	\hline
+	\verb=isso|aquilo= & \textbf{isso} ou \textbf{aquilo} \\
+	\hline
+	\verb=[rpg]ato|ganso= & rato, pato, gato ou ganso {\tiny(ou algum outro jogador)} \\
+	\hline
+   \end{tabular}
+  \end{center}
+ \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+ \frametitle{Outros metacaracteres}
+ \begin{block}{Grupo : (...)}
+  \begin{itemize}
+   \item Permite agrupar literais, metacaracteres e tudo mais para poder quantificá-los
+  \end{itemize}
+
+  \pause
+  \begin{center}
+   \begin{tabular}{|l|l|}
+	\hline
+	\textbf{Expressão} & \textbf{Casa com} \\
+	\hline
+	\verb=([xX]u)+=   & xu, Xu, xuXu, Xuxu, xuxuxu... \\
+	\hline
+	\verb=(\.?\d{1,3}){4}= & 192.168.255.25 {\tiny(ip do lion)} \\
+	\hline
+	\verb=((su|hi)per)?mercado= & {\small mercado, supermercado, hipermercado}\\
+	\hline
+   \end{tabular}
+  \end{center}
+ \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+ \frametitle{Outros metacaracteres}
+ \begin{block}{Retrovisor}
+  \begin{itemize}
+   \item Permite recuperar o valor de um grupo que casou
+   \item Os retrovisores vão de \verb=\1= a \verb=\9=
+  \end{itemize}
+
+  \pause
+  \begin{center}
+   \begin{tabular}{|l|l|}
+	\hline
+	\textbf{Expressão} & \textbf{Casa com} \\
+	\hline
+	\verb=(bom|bum)\1= & bombom ou bumbum \\
+	\hline
+	\verb=(\w+)-\1= & {\small bate-bate, quero-quero, corre-corre} \\
+	\hline
+	\verb=in(d)ol(or) é sem \1\2= & indolor é sem dor \\
+	\hline
+	\verb=(M)(A)(P)(S) ~ \4\3\2\1= & MAPS \verb=~= SPAM \\
+	\hline
+   \end{tabular}
+  \end{center}
+ \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+ \frametitle{Exercícios}
+ \begin{block}{Escreva uma expressão regular que case com...}
+  \begin{enumerate}
+   \item Sequências de 3 a 5 números repetidos
+   \item Palavras de 4 letras repetidas
+   \item Uma palavra ou sequência númerica com ao menos 2 caracteres repetidos
+  \end{enumerate}
+ \end{block}
+
+ \pause
+ \begin{block}{Respostas}
+  \begin{enumerate}
+   \item \verb=(\d{3,5})\1$=
+	\pause
+   \item \verb=\b(\w{4}) \1\b=
+	\pause
+   \item \verb=(\w{2,})\1=
+  \end{enumerate}
+ \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+ \frametitle{Ultimate question!}
+ \begin{block}{O que casaria com a expressão}
+  \begin{itemize}
+   \item {\tiny\verb=(s)(o)( )(l)\2(n)g\3(a)\5d\3(t)(h)\6\5k\1\3(f)\2r\3\6\4\4\3\7\8e\3\9i\1\8=}
+  \end{itemize}
+ \end{block}
+
+ \pause
+ \begin{block}{Resposta}
+  \begin{itemize}
+   \item so long and thanks for all the fish
+  \end{itemize}
+ \end{block}
+\end{frame}
+
+\begin{frame}
+ \frametitle{This is the end... beautiful friend...}
+ \begin{block}{That's all folks!}
+  \begin{center}
+   {\LARGE Obrigado!}
+  \end{center}
+ \end{block}
+\end{frame}
+
+\end{document}
+
